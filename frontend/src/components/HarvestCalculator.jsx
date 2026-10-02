@@ -14,6 +14,7 @@
 import { useEffect, useState } from 'react'
 import { harvest, getRoofMaterials } from '../api/client'
 import CostRoiCard from './CostRoiCard'
+import RecommendationCard from './RecommendationCard'
 
 export default function HarvestCalculator({ predictedRainfall, locationName }) {
   // ---- Form state ----
@@ -220,6 +221,7 @@ export default function HarvestCalculator({ predictedRainfall, locationName }) {
         <>
           <HarvestResult result={result} />
           <CostRoiCard result={result} onPaybackChange={setPaybackYears} />
+          <RecommendationCard result={result} paybackYears={paybackYears} />
         </>
       )}
     </div>
