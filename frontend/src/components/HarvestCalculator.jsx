@@ -13,6 +13,7 @@
 
 import { useEffect, useState } from 'react'
 import { harvest, getRoofMaterials } from '../api/client'
+import CostRoiCard from './CostRoiCard'
 
 export default function HarvestCalculator({ predictedRainfall, locationName }) {
   // ---- Form state ----
@@ -46,6 +47,8 @@ export default function HarvestCalculator({ predictedRainfall, locationName }) {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  // Payback period (years) — set by CostRoiCard via onPaybackChange, forwarded to RecommendationCard
+  const [paybackYears, setPaybackYears] = useState(null)
 
   // ---- Calculate handler ----
   async function handleCalculate() {
@@ -213,7 +216,12 @@ export default function HarvestCalculator({ predictedRainfall, locationName }) {
       </div>
 
       {/* ---------- RESULT ---------- */}
-      {result && <HarvestResult result={result} />}
+      {result && (
+        <>
+          <HarvestResult result={result} />
+          <CostRoiCard result={result} onPaybackChange={setPaybackYears} />
+        </>
+      )}
     </div>
   )
 }
