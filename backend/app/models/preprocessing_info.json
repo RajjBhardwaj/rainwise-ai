@@ -1,0 +1,12 @@
+{
+  "rain_threshold_mm": 1.0,
+  "regression_transform": "log1p",
+  "regression_inverse": "expm1",
+  "notes": [
+    "rain_tomorrow = 1 if precipitation_sum tomorrow > 1.0 mm, else 0",
+    "Classifier target: rain_tomorrow",
+    "Regressor target: log1p(precip_tomorrow)",
+    "To get mm from regressor output, apply expm1()",
+    "Feature order MUST match feature_list.json"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "trained_on": "2010-01-08 to 2024-12-29 (all data after final retrain)",
+  "evaluated_on": "2022-01-01 to 2024-12-29 (time-based holdout)",
+  "n_train_rows": 43760,
+  "n_test_rows": 10940,
+  "n_total_rows": 54700,
+  "n_features": 22,
+  "classification": {
+    "target": "rain_tomorrow",
+    "Logistic Regression": {
+      "accuracy": 0.8454,
+      "precision": 0.7102,
+      "recall": 0.8469,
+      "f1": 0.7726,
+      "roc_auc": 0.9203
+    },
+    "Random Forest": {
+      "accuracy": 0.8631,
+      "precision": 0.7749,
+      "recall": 0.7868,
+      "f1": 0.7808,
+      "roc_auc": 0.9289
+    },
+    "chosen_model": "Random Forest"
+  },
+  "regression": {
+    "target": "log1p(precip_tomorrow)",
+    "Linear Regression": {
+      "mae": 0.4689,
+      "rmse": 0.7032,
+      "r2": 0.557
+    },
+    "Random Forest": {
+      "mae": 0.4158,
+      "rmse": 0.6699,
+      "r2": 0.598
+    },
+    "chosen_model": "Random Forest"
+  }
+}
