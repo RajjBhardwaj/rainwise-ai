@@ -1,2 +1,31 @@
 @import "tailwindcss";
 
+/* -------------------------------------------------------------------------
+ * Rain animation — applied to .rain-header in App.jsx.
+ *
+ * Uses a small repeating radial-gradient as a "rain drop" texture.
+ * animation-play-state is driven by --rain-animation (set by weatherTheme.js):
+ *   'running'  → active when condition = rainy
+ *   'paused'   → default for cloudy / sunny (zero CPU, zero repaints)
+ * ------------------------------------------------------------------------- */
+@keyframes rain-fall {
+  0% {
+    background-position: 0px 0px;
+  }
+  100% {
+    background-position: -30px 60px;
+  }
+}
+
+.rain-header {
+  background-image: radial-gradient(
+    circle,
+    rgba(147, 210, 255, 0.12) 1px,
+    transparent 1px
+  );
+  background-size: 18px 18px;
+  animation: rain-fall 1.8s linear infinite;
+  animation-play-state: var(--rain-animation, paused);
+  /* Subtle transition so the texture fades in/out when condition changes */
+  transition: background-color 0.4s ease;
+}
