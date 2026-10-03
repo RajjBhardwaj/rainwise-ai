@@ -6,6 +6,7 @@
  *
  * Props:
  *   result          — the /api/harvest response object (must not be null)
+ *   cityName        — the name of the selected city (used for annual rainfall lookup)
  *   onPaybackChange — callback(paybackYears: number | null) called whenever
  *                     the payback calculation changes (used by parent to feed
  *                     RecommendationCard)
@@ -20,14 +21,17 @@ import {
   WATER_SOURCE_COSTS,
   SYSTEM_FIXED_COSTS,
   PROJECTION_YEARS,
-  ANNUAL_EVENTS_ESTIMATE,
+  ANNUAL_RAINFALL_MM,
+  ROOF_RUNOFF_COEFFICIENTS,
+  FIRST_FLUSH_FRACTION,
   INR,
 } from '../config/costs'
+
 
 // ---------------------------------------------------------------------------
 // ROI calculator (pure function — easy to test in isolation)
 // ---------------------------------------------------------------------------
-function computeRoi({ result, tankType, waterSource }) {
+function computeRoi({ result, tankType, waterSource, cityKey }) {
   const tankSpec = TANK_COSTS[tankType]
   const sourceSpec = WATER_SOURCE_COSTS[waterSource]
 
@@ -37,9 +41,11 @@ function computeRoi({ result, tankType, waterSource }) {
   const totalInvestment = tankCost + fixedTotal
 
   // --- Annual savings ---
-  // Approximate annual harvest by scaling the single-event result.
-  // See ANNUAL_EVENTS_ESTIMATE in costs.js for rationale.
-  const annualHarvestL = result.net_harvest_liters * ANNUAL_EVENTS_ESTIMATE
+  // Use the location's annual rainfall (IMD averages) applied to the roof area.
+  // This is more accurate than extrapolating from a single event's rainfall.
+  const annualRainfallMm = ANNUAL_RAINFALL_MM[cityKey] ?? ANNUAL_RAINFALL_MM.default
+  const runoffCoeff = ROOF_RUNOFF_COEFFICIENTS[result.roof_material] ?? 0.85
+  const annualHarvestL = annualRainfallMm * result.area_m2 * runoffCoeff * (1 - FIRST_FLUSH_FRACTION)
   const annualSavings = (annualHarvestL / 1000) * sourceSpec.costPer1000L
 
   // --- Payback & projection ---
@@ -58,6 +64,7 @@ function computeRoi({ result, tankType, waterSource }) {
     net15YearSavings,
   }
 }
+
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -110,16 +117,19 @@ function ToggleGroup({ label, options, value, onChange }) {
   )
 }
 
+
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
-export default function CostRoiCard({ result, onPaybackChange }) {
+export default function CostRoiCard({ result, cityName, onPaybackChange }) {
   const [tankType, setTankType] = useState('plastic')
   const [waterSource, setWaterSource] = useState('municipal')
 
+  const cityKey = cityName?.toLowerCase()?.split(',')[0]?.trim() ?? 'default'
+
   const roi = useMemo(
-    () => computeRoi({ result, tankType, waterSource }),
-    [result, tankType, waterSource]
+    () => computeRoi({ result, tankType, waterSource, cityKey }),
+    [result, tankType, waterSource, cityKey]
   )
 
   // Notify parent whenever payback changes (feeds RecommendationCard)
@@ -191,7 +201,10 @@ export default function CostRoiCard({ result, onPaybackChange }) {
       {/* Investment breakdown */}
       <div className="border-t border-slate-700 pt-4">
         <div className="text-xs text-slate-400 mb-2 uppercase tracking-wide">Investment breakdown</div>
-        <CostRow label={`${TANK_COSTS[tankType].label} (${result.recommended_tank_liters.toLocaleString()} L)`} value={roi.tankCost} />
+        <CostRow
+          label={`${TANK_COSTS[tankType].label} (${result.recommended_tank_liters.toLocaleString()} L)`}
+          value={roi.tankCost}
+        />
         {Object.values(SYSTEM_FIXED_COSTS).map(({ label, cost }) => (
           <CostRow key={label} label={label} value={cost} dimmed />
         ))}
@@ -203,8 +216,9 @@ export default function CostRoiCard({ result, onPaybackChange }) {
 
       {/* Disclaimer */}
       <p className="text-xs text-slate-600 mt-4">
-        * Annual savings estimated assuming ~{ANNUAL_EVENTS_ESTIMATE} equivalent rain events/year.
-        Actual savings depend on local rainfall pattern and usage. Prices are 2024–25 Indian market approximations.
+        * Annual savings based on IMD average annual rainfall for the selected city, roof area,
+        and runoff coefficient. Actual savings depend on local rainfall pattern and usage.
+        Prices are 2024–25 Indian market approximations.
       </p>
     </div>
   )

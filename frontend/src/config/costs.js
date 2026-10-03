@@ -9,6 +9,36 @@
 // ---------------------------------------------------------------------------
 // Tank construction cost per litre of storage capacity
 // ---------------------------------------------------------------------------
+// Average annual rainfall by city (in mm) — India Meteorological Department averages
+// Source: long-term IMD normals, rounded to nearest 50mm
+export const ANNUAL_RAINFALL_MM = {
+  mumbai: 2200,
+  delhi: 800,
+  chennai: 1400,
+  kolkata: 1800,
+  bengaluru: 970,
+  hyderabad: 800,
+  pune: 700,
+  ahmedabad: 800,
+  jaipur: 650,
+  lucknow: 900,
+  // default if city not found
+  default: 900,
+}
+
+// Runoff coefficients by roof material (must match backend harvest_service.py)
+export const ROOF_RUNOFF_COEFFICIENTS = {
+  concrete: 0.85,
+  tile: 0.75,
+  metal: 0.90,
+  asbestos: 0.80,
+  green: 0.40,
+}
+
+// First-flush fraction (standard 1.5mm depth, approximated as 5% of total)
+export const FIRST_FLUSH_FRACTION = 0.05
+
+
 export const TANK_COSTS = {
   plastic: {
     label: 'Plastic / HDPE tank',

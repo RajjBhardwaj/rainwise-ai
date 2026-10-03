@@ -220,7 +220,7 @@ export default function HarvestCalculator({ predictedRainfall, locationName }) {
       {result && (
         <>
           <HarvestResult result={result} />
-          <CostRoiCard result={result} onPaybackChange={setPaybackYears} />
+                    <CostRoiCard result={result} cityName={locationName} onPaybackChange={setPaybackYears} />
           <RecommendationCard result={result} paybackYears={paybackYears} />
         </>
       )}
