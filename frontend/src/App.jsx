@@ -1,14 +1,17 @@
+
+
 import { useState } from 'react'
-import LocationSelector from './components/LocationSelector'
-import PredictionCard from './components/PredictionCard'
-import MapView from './components/MapView'
-import HarvestCalculator from './components/HarvestCalculator'
-import { predictByLocation } from './api/client'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
+import { predictByLocation } from './api/client'
+import NavBar from './components/NavBar'
+import DashboardPage from './pages/DashboardPage'
+import CalculatorPage from './pages/CalculatorPage'
+import ComparePage from './pages/ComparePage'
+import AnalyticsPage from './pages/AnalyticsPage'
 
 
 // ---------------------------------------------------------------------------
-// SeasonBadge — tiny inline component, no separate file needed
+// Weather badge — shows current condition (Sunny / Cloudy / Rainy)
 // ---------------------------------------------------------------------------
 const CONDITION_BADGE_STYLES = {
   rainy: 'bg-cyan-900/60 text-cyan-300 border-cyan-700',
@@ -22,30 +25,41 @@ const CONDITION_ICONS = {
   sunny: '☀️',
 }
 
-function SeasonBadge({ season, condition }) {
-  if (!season || !condition) return null
-  const badgeClass = CONDITION_BADGE_STYLES[condition] ?? 'bg-slate-700 text-slate-300 border-slate-600'
+const CONDITION_LABELS = {
+  rainy: 'Rainy',
+  cloudy: 'Cloudy',
+  sunny: 'Sunny',
+}
+
+function WeatherBadge({ condition }) {
+  if (!condition) return null
+  const badgeClass =
+    CONDITION_BADGE_STYLES[condition] ??
+    'bg-slate-700 text-slate-300 border-slate-600'
   const icon = CONDITION_ICONS[condition] ?? '🌡'
+  const label = CONDITION_LABELS[condition] ?? condition
   return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-semibold ${badgeClass}`}>
-      {icon} {season}
+    <span
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-semibold ${badgeClass}`}
+    >
+      {icon} {label}
     </span>
   )
 }
 
+
 // ---------------------------------------------------------------------------
-// AppInner — consumes useTheme so it lives inside ThemeProvider
+// AppInner — holds all state and routes between pages
 // ---------------------------------------------------------------------------
 function AppInner() {
-  const { condition, season, setWeather } = useTheme()
+  const { condition, setWeather } = useTheme()
 
+  const [currentPage, setCurrentPage] = useState('dashboard')
   const [selectedCity, setSelectedCity] = useState(null)
   const [prediction, setPrediction] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Core handler: called from both the dropdown and the map.
-  // `city` is always an object: { name, lat, lon }
   async function handleLocationPick(city) {
     setSelectedCity(city)
     setPrediction(null)
@@ -67,18 +81,12 @@ function AppInner() {
     }
   }
 
-  // Adapter for the map: it calls onSelect(lat, lon, name); we wrap
-  // it into an object and pass it to handleLocationPick.
-  function handleMapSelect(lat, lon, name) {
-    handleLocationPick({ name, lat, lon })
-  }
-
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-6xl mx-auto px-6 py-10">
 
         {/* Header */}
-        <header className="mb-8 rain-header rounded-xl px-4 py-3">
+        <header className="mb-6 rain-header rounded-xl px-4 py-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h1 className="text-3xl font-bold">Rainfall Harvesting System</h1>
@@ -86,47 +94,40 @@ function AppInner() {
                 AI-powered rainfall prediction and rainwater harvesting optimization
               </p>
             </div>
-            <SeasonBadge season={season} condition={condition} />
+            <WeatherBadge condition={condition} />
           </div>
         </header>
 
-        {/* Map (top) */}
-        <div className="mb-6">
-          <MapView
-            lat={selectedCity?.lat ?? null}
-            lon={selectedCity?.lon ?? null}
-            onSelect={handleMapSelect}
-          />
-        </div>
+        {/* Navigation */}
+        <NavBar currentPage={currentPage} onNavigate={setCurrentPage} />
 
-        {/* Location selector */}
-        <div className="mb-6">
-          <LocationSelector
-            selected={selectedCity}
-            onChange={handleLocationPick}
+        {/* Page content */}
+        {currentPage === 'dashboard' && (
+          <DashboardPage
+            selectedCity={selectedCity}
+            prediction={prediction}
+            loading={loading}
+            error={error}
+            onLocationPick={handleLocationPick}
           />
-        </div>
+        )}
 
-        {/* Prediction display */}
-        <PredictionCard
-          data={prediction}
-          loading={loading}
-          error={error}
-          locationName={selectedCity?.name ?? ''}
-        />
-
-        {/* Harvesting calculator */}
-        <div className="mt-6">
-          <HarvestCalculator
-            predictedRainfall={prediction?.expected_rainfall_mm ?? null}
-            locationName={selectedCity?.name ?? ''}
+        {currentPage === 'calculator' && (
+          <CalculatorPage
+            prediction={prediction}
+            selectedCity={selectedCity}
           />
-        </div>
+        )}
+
+        {currentPage === 'compare' && <ComparePage />}
+
+        {currentPage === 'analytics' && <AnalyticsPage />}
 
       </div>
     </div>
   )
 }
+
 
 // ---------------------------------------------------------------------------
 // App — wraps AppInner with ThemeProvider
