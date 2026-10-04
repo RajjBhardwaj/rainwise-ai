@@ -20,9 +20,9 @@ export default function CalculatorPage({ prediction, selectedCity }) {
       )}
 
       <HarvestCalculator
-        predictedRainfall={prediction?.expected_rainfall_mm ?? null}
-        locationName={selectedCity?.name ?? ''}
-      />
+  predictedRainfall={prediction?.expected_rainfall_mm ?? null}
+  locationName={selectedCity?.name?.split(',')[0]?.trim() ?? ''}
+/>
     </div>
   )
 }
