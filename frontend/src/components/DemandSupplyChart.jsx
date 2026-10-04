@@ -74,7 +74,7 @@ const DEFAULT_RUNOFF_COEFF = 0.85
 // ---------------------------------------------------------------------------
 function buildChartData({ householdSize, roofAreaM2, annualRainfallMm }) {
   const monthlyDemand = householdSize * 100 * 30      // L per month
-  const annualSupplyL = roofAreaM2 * DEFAULT_RUNOFF_COEFF * annualRainfallMm * 1000
+  const annualSupplyL = roofAreaM2 * DEFAULT_RUNOFF_COEFF * annualRainfallMm
 
   return MONTH_LABELS.map((month, i) => {
     const fraction = MONTHLY_MULTIPLIERS[i] / MULTIPLIER_SUM
