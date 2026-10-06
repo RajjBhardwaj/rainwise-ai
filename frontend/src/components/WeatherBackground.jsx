@@ -13,17 +13,25 @@
 import { useMemo } from 'react'
 
 function RainLayer() {
-  // Generate 90 raindrops with random positions and speeds
+  // Reduce drop count on mobile for performance.
+  // matchMedia evaluated once per mount — no resize listener needed.
+  const dropCount =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(max-width: 768px)').matches
+      ? 40
+      : 90
+
   const drops = useMemo(() => {
-    return Array.from({ length: 90 }, (_, i) => ({
+    return Array.from({ length: dropCount }, (_, i) => ({
       id: i,
-      left: Math.random() * 100,          // 0–100% of viewport width
-      duration: 0.6 + Math.random() * 0.8, // 0.6–1.4s per fall
-      delay: Math.random() * 2,            // 0–2s stagger
-      opacity: 0.35 + Math.random() * 0.5, // 0.35–0.85
-      size: Math.random() > 0.7 ? 24 : 16, // some drops longer than others
+      left: Math.random() * 100,           // 0–100% of viewport width
+      duration: 0.55 + Math.random() * 0.9, // 0.55–1.45s per fall
+      delay: Math.random() * 2.5,           // 0–2.5s stagger
+      opacity: 0.30 + Math.random() * 0.55, // 0.30–0.85
+      size: Math.random() > 0.65 ? 22 : 14, // some drops longer than others
     }))
-  }, [])
+  }, [dropCount])
+
 
   return (
     <div className="rain-layer-full">
