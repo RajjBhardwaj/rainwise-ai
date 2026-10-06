@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // Central place for the backend URL. Change in one place if needed.
-const API_BASE = 'http://127.0.0.1:8001'
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8001'
 
 const client = axios.create({
   baseURL: API_BASE,
