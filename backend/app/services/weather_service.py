@@ -14,7 +14,12 @@ from datetime import date, timedelta
 
 import httpx
 
+from datetime import datetime, timedelta
+import time
 
+# Simple in-memory cache: key = (lat, lon), value = (timestamp, data)
+_weather_cache = {}
+_CACHE_TTL_SECONDS = 1800  # 30 minutes
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 
@@ -114,6 +119,34 @@ def fetch_recent_precipitation(lat: float, lon: float, days: int = 10) -> list:
 
 
 def fetch_full_weather(lat: float, lon: float) -> dict:
+    """
+    Fetch current weather + recent precipitation, with 30-minute caching.
+    Cache key: rounded lat/lon to 2 decimal places (~1 km precision).
+    """
+    # Round coordinates to 2 decimals for cache key
+    cache_key = (round(lat, 2), round(lon, 2))
+
+    # Check cache
+    cached = _weather_cache.get(cache_key)
+    if cached:
+        ts, data = cached
+        if time.time() - ts < _CACHE_TTL_SECONDS:
+            print(f"[weather_service] Cache HIT for {cache_key}")
+            return data
+        else:
+            # Expired — remove
+            del _weather_cache[cache_key]
+
+    print(f"[weather_service] Cache MISS for {cache_key} — calling Open-Meteo")
+
+    # Fetch from Open-Meteo
+    current = fetch_current_weather(lat, lon)
+    history = fetch_recent_precipitation(lat, lon, days=10)
+    result = {"current": current, "history": history}
+
+    # Store in cache
+    _weather_cache[cache_key] = (time.time(), result)
+    return result
     """
     Convenience wrapper: fetch current weather + recent precipitation in one call.
 

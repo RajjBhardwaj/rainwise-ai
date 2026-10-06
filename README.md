@@ -1,8 +1,9 @@
-# AI-Based Rainfall Prediction and Geospatial Rainwater Harvesting Optimization System
+# RainWise AI — Rainfall Prediction & Harvesting
 
-A full-stack ML project that predicts rainfall for a selected location and estimates
-potential rainwater harvesting based on roof/catchment area.
+AI-powered rainfall prediction and rainwater harvesting system for India.
 
+## Quick Start
+[rest of README]
 ## Tech Stack
 
 - **Frontend**: React + Vite + Tailwind CSS + Leaflet + Recharts
