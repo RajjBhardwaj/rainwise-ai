@@ -94,10 +94,10 @@ function AppInner() {
         <header className="mb-6 rain-header rounded-xl px-4 py-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h1 className="text-3xl font-bold">Rainfall Harvesting System</h1>
-              <p className="text-slate-400 mt-1">
-                AI-powered rainfall prediction and rainwater harvesting optimization
-              </p>
+             <h1 className="text-3xl font-bold">RainWise AI</h1>
+<p className="text-slate-400 mt-1">
+  Predict rain. Harvest water. Save money.
+</p>
             </div>
             <WeatherBadge condition={condition} />
           </div>

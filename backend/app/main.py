@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Rainfall Harvesting API",
+    title="RainWise AI API",
     description="AI-based rainfall prediction and rainwater harvesting optimization backend",
     version="0.3.0",
     lifespan=lifespan,
