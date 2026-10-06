@@ -154,3 +154,12 @@ def submit_review(body: ReviewCreate):
         return review
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Could not save review: {e}")
+    
+
+@app.get("/api/feature-importances")
+def feature_importances():
+    """Return feature importances from the trained ML classifier."""
+    try:
+        return {"features": model_service.get_feature_importances()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed: {e}")
