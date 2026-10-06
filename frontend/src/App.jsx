@@ -4,9 +4,11 @@ import { useState } from 'react'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
 import { predictByLocation } from './api/client'
 import NavBar from './components/NavBar'
+import WeatherBackground from './components/WeatherBackground'
+
 import DashboardPage from './pages/DashboardPage'
 import CalculatorPage from './pages/CalculatorPage'
-import ComparePage from './pages/ComparePage'
+
 import AnalyticsPage from './pages/AnalyticsPage'
 
 
@@ -82,8 +84,11 @@ function AppInner() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-6xl mx-auto px-6 py-10">
+     
+    <div className="min-h-screen bg-slate-950 text-white relative">
+      <WeatherBackground condition={condition} />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-10">
 
         {/* Header */}
         <header className="mb-6 rain-header rounded-xl px-4 py-3">
@@ -119,7 +124,7 @@ function AppInner() {
           />
         )}
 
-        {currentPage === 'compare' && <ComparePage />}
+        
 
         {currentPage === 'analytics' && <AnalyticsPage />}
 

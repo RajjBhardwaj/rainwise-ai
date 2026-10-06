@@ -29,3 +29,122 @@
   /* Subtle transition so the texture fades in/out when condition changes */
   transition: background-color 0.4s ease;
 }
+/* ------------------------------------------------------------------ */
+/* Weather background animations (Feature 2)                           */
+/* All effects are pure CSS — no canvas, no JS animation loop.         */
+/* ------------------------------------------------------------------ */
+
+/* Container — full-viewport, behind all content */
+.weather-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Fade transition when condition changes */
+.weather-bg > * {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 800ms ease-in-out;
+}
+.weather-bg.rainy  > .bg-rain  { opacity: 1; }
+.weather-bg.cloudy > .bg-cloud { opacity: 1; }
+.weather-bg.sunny  > .bg-sun   { opacity: 1; }
+
+/* ---- Rain ---- */
+/* ---- Rain (soft, blended) ---- */
+.bg-rain {
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.5) 0%,
+    rgba(15, 23, 42, 0.15) 100%
+  );
+}
+
+.bg-rain::before,
+.bg-rain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(
+      ellipse 1px 20px at 50% 50%,
+      rgba(186, 230, 253, 0.6) 0%,
+      rgba(186, 230, 253, 0.15) 40%,
+      transparent 100%
+    );
+  background-size: 30px 180px;
+  background-repeat: repeat;
+  animation: rain-fall 1.4s linear infinite;
+  filter: blur(0.4px);
+  will-change: background-position;
+}
+
+.bg-rain::after {
+  background-size: 60px 220px;
+  animation-duration: 2.1s;
+  animation-delay: -0.8s;
+  opacity: 0.7;
+}
+
+@keyframes rain-fall {
+  from { background-position: 0 0; }
+  to   { background-position: -40px 220px; }
+}
+/* ---- Clouds ---- */
+.bg-cloud::before,
+.bg-cloud::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: -30%;
+  width: 60%;
+  height: 40%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(148, 163, 184, 0.18) 0%,
+    rgba(148, 163, 184, 0.06) 40%,
+    transparent 70%
+  );
+  filter: blur(30px);
+  animation: cloud-drift 60s linear infinite;
+}
+.bg-cloud::after {
+  top: 40%;
+  animation-delay: -30s;
+  animation-duration: 90s;
+}
+@keyframes cloud-drift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(200%); }
+}
+
+/* ---- Sun ---- */
+.bg-sun::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -15%;
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(
+    circle,
+    rgba(251, 191, 36, 0.22) 0%,
+    rgba(251, 146, 60, 0.10) 30%,
+    transparent 70%
+  );
+  animation: sun-glow 6s ease-in-out infinite alternate;
+}
+@keyframes sun-glow {
+  from { transform: scale(1);   opacity: 0.7; }
+  to   { transform: scale(1.1); opacity: 1;   }
+}
+.rain-layer-full {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}

@@ -11,7 +11,6 @@
 const PAGES = [
   { key: 'dashboard',  label: 'Dashboard',  icon: '🗺' },
   { key: 'calculator', label: 'Calculator', icon: '🧮' },
-  { key: 'compare',    label: 'Compare',    icon: '⚖️' },
   { key: 'analytics',  label: 'Analytics',  icon: '📊' },
 ]
 
