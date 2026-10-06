@@ -1,0 +1,18 @@
+[
+  {
+    "id": "seed-001",
+    "name": "Priya Nair",
+    "location": "Kochi, Kerala",
+    "rating": 5,
+    "message": "This tool helped me plan a 3,000 L rooftop system for my house. The payback calculator was spot on — I break even in 2.8 years, exactly as predicted. Monsoon season now feels like a resource, not a problem.",
+    "created_at": "2026-09-15T08:30:00+00:00"
+  },
+  {
+    "id": "seed-002",
+    "name": "Suresh Iyer",
+    "location": "Pune, Maharashtra",
+    "rating": 5,
+    "message": "Showed this to our apartment society. We used the demand vs supply chart to convince the committee. We installed a 10,000 L system for 24 flats and now save ₹45,000 a year on tanker costs. Tool is very practical.",
+    "created_at": "2026-09-28T11:15:00+00:00"
+  }
+]

@@ -50,4 +50,22 @@ export async function getRoofMaterials() {
   const res = await client.get('/api/roof-materials')
   return res.data
 }
+
+/**
+ * Fetch all user-submitted reviews (newest first).
+ */
+export async function getReviews() {
+  const res = await client.get('/api/reviews')
+  return res.data
+}
+
+/**
+ * Submit a new user review.
+ * @param {{ name: string, message: string, rating: number, location?: string }} review
+ */
+export async function submitReview(review) {
+  const res = await client.post('/api/reviews', review)
+  return res.data
+}
+
 export default client

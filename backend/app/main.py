@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 
 from app.schemas.prediction import (
     PredictionRequest,
@@ -18,6 +19,7 @@ from app.services.harvest_service import (
     HarvestError,
     list_roof_materials,
 )
+from app.services import reviews_service
 
 
 @asynccontextmanager
@@ -117,3 +119,38 @@ def harvest(request: HarvestRequest):
 def roof_materials():
     """Return the supported roof materials with their runoff coefficients."""
     return list_roof_materials()
+
+
+# ---------------------------------------------------------------------------
+# User reviews
+# ---------------------------------------------------------------------------
+
+class ReviewCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100, description="Reviewer's name")
+    message: str = Field(..., min_length=10, max_length=1000, description="Review text")
+    rating: int = Field(..., ge=1, le=5, description="Star rating 1–5")
+    location: str = Field(default="", max_length=100, description="City / region (optional)")
+
+
+@app.get("/api/reviews")
+def list_reviews():
+    """Return all user-submitted reviews, sorted newest first."""
+    return reviews_service.get_reviews()
+
+
+@app.post("/api/reviews", status_code=201)
+def submit_review(body: ReviewCreate):
+    """
+    Persist a new user review.
+    Returns the saved review object (including generated id and created_at).
+    """
+    try:
+        review = reviews_service.add_review(
+            name=body.name,
+            message=body.message,
+            rating=body.rating,
+            location=body.location,
+        )
+        return review
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Could not save review: {e}")
