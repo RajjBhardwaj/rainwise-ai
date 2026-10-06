@@ -91,6 +91,16 @@ class ModelService:
             "expected_rainfall_mm": round(expected_rainfall_mm, 2),
         }
 
-
+    def get_feature_importances(self):
+        """Return top feature importances from the trained classifier."""
+        if not self._loaded:
+            raise RuntimeError("ModelService not loaded. Call load() first.")
+        importances = self.classifier.feature_importances_
+        pairs = list(zip(self.feature_list, importances))
+        pairs.sort(key=lambda x: x[1], reverse=True)
+        return [
+            {"feature": name, "importance": round(float(imp), 4)}
+            for name, imp in pairs
+        ]
 # Single global instance shared across the app
 model_service = ModelService()
